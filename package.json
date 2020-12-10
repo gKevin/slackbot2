@@ -1,0 +1,14 @@
+{
+  "name": "slackbot2",
+  "version": "1.0.0",
+  "description": "Oncologist",
+  "main": "slackbot2.js",
+  "scripts": {
+    "start": "Node slackbot2.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.5.1"
+  }
+}
