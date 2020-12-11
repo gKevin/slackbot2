@@ -11,6 +11,10 @@ function pickRandomArrayElt(array) {
 function pickRandomUsername(channel) {
     const botName = bot.user.username;
 
+    if(channel.members == undefined) {
+        return '';
+    }
+
     var members = Array.from(channel.members.values());
     members = members.filter(member => member.user.username !== botName);
 
@@ -29,9 +33,15 @@ function expandResponseVariables(message, reply) {
 
     var botResponse = reply.replace(userTag, message.author.username);
 
-    if(botResponse.includes(randomUserTag)) {
+    if(botResponse.includes(randomUserTag)){
         const randomUser = pickRandomUsername(message.channel);
-        botResponse = botResponse.replace(randomUserTag, randomUser);
+
+        if(randomUser !== '') {
+            botResponse = botResponse.replace(randomUserTag, randomUser);
+        }
+        else {
+            botResponse = ''
+        }
     }
 
     return botResponse;
@@ -67,7 +77,9 @@ function respond(message, triggerIndex) {
         var botResponse = pickRandomArrayElt(responses);
         botResponse = expandResponseVariables(message, botResponse);
 
-        message.channel.send(botResponse);
+        if(botResponse !== '') {
+            message.channel.send(botResponse);
+        }
     }
 }
 
