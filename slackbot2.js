@@ -1,5 +1,7 @@
 let autoResponses = require('./responses.json').autoresponses;
-let token = require('./token.json').token
+let config = require('./botConfig.json')
+
+const token = config.token;
 
 const Discord = require('discord.js');
 const bot = new Discord.Client();
@@ -87,7 +89,7 @@ bot.on('message', async message => {
     const author  = message.author.username;
     const botName = bot.user.username;
 
-    if (author !== botName) {
+    if (author !== botName && (!message.author.bot || config.respondToBots)) {
         const triggerIndex = findTriggerIndex(message.content);
 
         if(triggerIndex > -1) {
