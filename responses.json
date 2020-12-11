@@ -1,0 +1,35 @@
+{
+    "autoresponses": [
+        {
+            "triggers": [
+                "Hello",
+                "Hi",
+                "Good morning",
+                "Good evening"
+            ],
+            "responses": [
+                "Hello {user}!",
+                "Hi {user}, I hope you're having a wonderful day !"
+            ]
+        },
+        {
+            "triggers": [
+                "scrum master"
+            ],
+            "responses": [
+                "We should pick {randomUser} !"
+            ]
+        },
+        {
+            "triggers": [
+                "bot",
+                "slackbot"
+            ],
+            "responses": [
+                "How can I help you ?",
+                "That's me !",
+                "Is there anything I can do for you today ?"
+            ]
+        }
+        ]
+    }
