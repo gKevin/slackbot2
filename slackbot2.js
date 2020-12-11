@@ -75,7 +75,7 @@ bot.on('message', async message => {
     const author  = message.author.username;
     const botName = bot.user.username;
 
-    if (author !== botName && message.channel.name ==='test') {
+    if (author !== botName) {
         const triggerIndex = findTriggerIndex(message.content);
 
         if(triggerIndex > -1) {
