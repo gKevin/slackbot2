@@ -1,4 +1,5 @@
 {
     "token": "xxx",
-    "respondToBots": false
+    "respondToBots": false,
+    "loadGuildMembersOnStart": false
 }

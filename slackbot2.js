@@ -42,7 +42,7 @@ function expandResponseVariables(message, reply) {
             botResponse = botResponse.replace(randomUserTag, randomUser);
         }
         else {
-            botResponse = ''
+            botResponse = '';
         }
     }
 
@@ -115,6 +115,20 @@ bot.on('message', async message => {
         if(triggerIndex > -1) {
             respond(message, triggerIndex);
             react(message, triggerIndex);
+        }
+    }
+});
+
+bot.on('ready', () => {
+    // Loading all guild members requires the developer to enable the server members intent 
+    // inside the bot tab of the developer portal page.
+    if(config.loadGuildMembersOnStart) { 
+        for(const guild of Array.from(bot.guilds.cache.values())) {
+            bot.guilds.cache.
+            get(guild.id)
+            .members.fetch()
+            .then(console.log)
+            .catch(console.error);
         }
     }
 });
