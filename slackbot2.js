@@ -80,7 +80,7 @@ function respond(message, triggerIndex) {
         botResponse = expandResponseVariables(message, botResponse);
 
         if(botResponse !== '') {
-            message.channel.send(botResponse);
+            message.channel.send(botResponse).catch(console.error);
         }
     }
 }
@@ -94,11 +94,11 @@ function react(message, triggerIndex) {
                 if(isCustomEmoji) {
                     const emoji = bot.emojis.cache.find(emoji => emoji.name === botReaction.reaction);
                     if(emoji) {
-                        message.react(emoji);
+                        message.react(emoji).catch(console.error);
                     }
                 }
                 else { // Unicode emoji.
-                    message.react(botReaction.reaction);
+                    message.react(botReaction.reaction).catch(console.error);
                 }
             }
         }); 
