@@ -10,6 +10,16 @@
             "responses": [
                 "Hello {user}!",
                 "Hi {user}, I hope you're having a wonderful day !"
+            ],
+            "reactions": [
+                {
+                    "reaction": "😀",
+                    "spawnRate": 0.1
+                },
+                {
+                    "reaction": "👋",
+                    "spawnRate": 0.5
+                }
             ]
         },
         {
@@ -29,7 +39,13 @@
                 "How can I help you ?",
                 "That's me !",
                 "Is there anything I can do for you today ?"
+            ],
+            "reactions": [
+                {
+                    "reaction": "🤖",
+                    "spawnRate": 1
+                }
             ]
         }
-        ]
-    }
+    ]
+}

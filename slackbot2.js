@@ -1,5 +1,5 @@
-let autoResponses = require('./responses.json').autoresponses;
-let config = require('./botConfig.json')
+const autoResponses = require('./responses.json').autoresponses;
+const config = require('./botConfig.json')
 
 const token = config.token;
 
@@ -17,7 +17,7 @@ function pickRandomUsername(channel) {
         return '';
     }
 
-    var members = Array.from(channel.members.values());
+    let members = Array.from(channel.members.values());
     members = members.filter(member => member.user.username !== botName);
 
     const randMember = pickRandomArrayElt(members);
@@ -33,7 +33,7 @@ function expandResponseVariables(message, reply) {
     const randomUserTag = '\{randomUser\}';
     const userTag       = '\{user\}'
 
-    var botResponse = reply.replace(userTag, message.author.username);
+    let botResponse = reply.replace(userTag, message.author.username);
 
     if(botResponse.includes(randomUserTag)){
         const randomUser = pickRandomUsername(message.channel);
@@ -76,12 +76,32 @@ function findTriggerIndex(messageContent) {
 function respond(message, triggerIndex) {
     const responses = autoResponses[triggerIndex].responses;
     if(responses.length > 0) {
-        var botResponse = pickRandomArrayElt(responses);
+        let botResponse = pickRandomArrayElt(responses);
         botResponse = expandResponseVariables(message, botResponse);
 
         if(botResponse !== '') {
             message.channel.send(botResponse);
         }
+    }
+}
+
+function react(message, triggerIndex) {
+    const reactions = autoResponses[triggerIndex].reactions;
+    if(reactions !== undefined && reactions.length > 0) {
+        reactions.forEach(botReaction => {
+            if(botReaction.spawnRate >= 1 || Math.random() < botReaction.spawnRate) {
+                const isCustomEmoji = /\w+/.test(botReaction.reaction);
+                if(isCustomEmoji) {
+                    const emoji = bot.emojis.cache.find(emoji => emoji.name === botReaction.reaction);
+                    if(emoji) {
+                        message.react(emoji);
+                    }
+                }
+                else { // Unicode emoji.
+                    message.react(botReaction.reaction);
+                }
+            }
+        }); 
     }
 }
 
@@ -94,6 +114,7 @@ bot.on('message', async message => {
 
         if(triggerIndex > -1) {
             respond(message, triggerIndex);
+            react(message, triggerIndex);
         }
     }
 });
