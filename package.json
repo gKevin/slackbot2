@@ -1,12 +1,12 @@
 {
   "name": "slackbot2",
   "version": "1.0.0",
-  "description": "Oncologist",
+  "description": "Simple autoresponse bot for discord.",
   "main": "slackbot2.js",
   "scripts": {
     "start": "Node slackbot2.js"
   },
-  "author": "",
+  "author": "Kevin Gaudet",
   "license": "MIT",
   "dependencies": {
     "discord.js": "^12.5.1"
