@@ -47,5 +47,9 @@
                 }
             ]
         }
+    ],
+    "greetings": [
+        "Welcome to {server}, {user}!",
+        "Hello there!"
     ]
 }

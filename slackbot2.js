@@ -1,10 +1,17 @@
-const autoResponses = require('./responses.json').autoresponses;
-const config = require('./botConfig.json')
+const responseFile = require('./responses.json');
+const config = require('./botConfig.json');
+
+const autoResponses = responseFile.autoresponses;
+const greetings     = responseFile.greetings;
 
 const token = config.token;
 
 const Discord = require('discord.js');
 const bot = new Discord.Client();
+
+const randomUserMacro = '\{randomUser\}';
+const userMacro       = '\{user\}'
+const guildMacro      = '\{server\}';
 
 function pickRandomArrayElt(array) {
     return array[Math.floor(Math.random() * array.length)];
@@ -29,17 +36,16 @@ function pickRandomUsername(channel) {
     return '';
 }
 
-function expandResponseVariables(message, reply) {
-    const randomUserTag = '\{randomUser\}';
-    const userTag       = '\{user\}'
+function expandResponseMacros(authorUsername, guildName, channel, reply) {
 
-    let botResponse = reply.replace(userTag, message.author.username);
+    let botResponse = reply.replace(userMacro, authorUsername);
+    botResponse     = botResponse.replace(guildMacro, guildName);
 
-    if(botResponse.includes(randomUserTag)){
-        const randomUser = pickRandomUsername(message.channel);
+    if(botResponse.includes(randomUserMacro)){
+        const randomUser = pickRandomUsername(channel);
 
         if(randomUser !== '') {
-            botResponse = botResponse.replace(randomUserTag, randomUser);
+            botResponse = botResponse.replace(randomUserMacro, randomUser);
         }
         else {
             botResponse = '';
@@ -73,14 +79,31 @@ function findTriggerIndex(messageContent) {
         autoresp.triggers.find(trigger => matchesTrigger(messageContent, trigger)));
 }
 
+function filterValidResponses(responses, message) {
+    return responses.filter(response => 
+        // Responses requiring a guildMacro or a randomUserMacro can not be sent
+        // in direct messages so we need to remove them.
+        (!response.includes(randomUserMacro) || message.channel) && 
+        (!response.includes(guildMacro) || message.guild)
+    );
+}
+
 function respond(message, triggerIndex) {
     const responses = autoResponses[triggerIndex].responses;
     if(responses.length > 0) {
-        let botResponse = pickRandomArrayElt(responses);
-        botResponse = expandResponseVariables(message, botResponse);
-
-        if(botResponse !== '') {
-            message.channel.send(botResponse).catch(console.error);
+        const validResponses = filterValidResponses(responses, message);
+        if(validResponses !== []) {
+            let botResponse = pickRandomArrayElt(validResponses);
+            let guildName = message.guild ? message.guild.name : '';
+    
+            botResponse = expandResponseMacros(message.author.username, 
+                                               guildName,
+                                               message.channel, 
+                                               botResponse);
+                    
+            if(botResponse !== '') {
+                message.channel.send(botResponse).catch(console.error);
+            }
         }
     }
 }
@@ -119,16 +142,27 @@ bot.on('message', async message => {
     }
 });
 
+bot.on('guildMemberAdd', guildMember => {
+    if(greetings !== []) {
+        let guild = guildMember.guild;
+        let systemChannel = guild.systemChannel;
+
+        const greeting = expandResponseMacros(guildMember.user.username,
+                                              guild.name,
+                                              systemChannel,
+                                              pickRandomArrayElt(greetings));
+        systemChannel.send(greeting);
+    }
+});
+
 bot.on('ready', () => {
     // Loading all guild members requires the developer to enable the server members intent 
     // inside the bot tab of the developer portal page.
     if(config.loadGuildMembersOnStart) { 
         for(const guild of Array.from(bot.guilds.cache.values())) {
-            bot.guilds.cache.
-            get(guild.id)
-            .members.fetch()
-            .then(console.log)
-            .catch(console.error);
+            bot.guilds.cache.get(guild.id)
+                            .members.fetch()
+                            .catch(console.error);
         }
     }
 });
